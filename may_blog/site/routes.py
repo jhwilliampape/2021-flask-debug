@@ -7,8 +7,8 @@ site = Blueprint('site', __name__, template_folder='site_templates')
 
 @site.route('/')
 def home():
-    posts = Post.query.all
-    returnrender_template('indexes.html', posts=posts)
+    posts = Post.query.all()
+    return render_template('index.html', posts = posts)
 
 @site.route('/profile')
 def profile():
@@ -17,14 +17,14 @@ def profile():
 @site.route('/createposts', methods=['GET','POST'])
 @login_required
 def createposts():
-    form = BlogPostForm
+    form = BlogPostForm()
     if request.method == 'POST' and form.validate():
         title = form.title.data
         content = form.content.data
-        user_id = current_user
+        user = current_user.id
         print('\n', title, content)
-        post = Post(title, content, user_id)
-        db.session.add(,post)
+        post = Post(title, content, user)
+        db.session.add(post)
         db.session.commit()
         return redirect(url_for('site.createposts'))
-    return render_template("createposts.html", form=form)
+    return render_template("createposts.html", form = form)
